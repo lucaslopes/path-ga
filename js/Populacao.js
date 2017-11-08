@@ -1,11 +1,22 @@
 class Populacao {
-  constructor() {
-    this.pontos           = []
-    this.tamanhoPopulacao = 500
+  constructor(pontos) {
+    this.tamanhoPopulacao = tamPopulacao
     this.matingpool       = []
 
-    for (let i = 0; i < this.tamanhoPopulacao; i++)
-      this.pontos[i] = new Ponto()
+    if (pontos)
+      this.pontos = pontos
+    else {
+      this.pontos = []
+      for (let i = 0; i < this.tamanhoPopulacao; i++)
+        this.pontos[i] = new Ponto()
+    }
+  }
+
+  executa() {
+    for (let i = 0; i < this.tamanhoPopulacao; i++) {
+      this.pontos[i].atualiza()
+      this.pontos[i].exibe()
+    }
   }
 
   avalia() {
@@ -19,13 +30,14 @@ class Populacao {
         campeao = this.pontos[i]
       }
     }
-    console.log(melhorDesempenho)
+
+    console.log('Geração: ' + geracoes + ' / Melhor: ' + melhorDesempenho)
     for (let i = 0; i < this.tamanhoPopulacao; i++)
       this.pontos[i].desempenho /= melhorDesempenho
 
-    this.matingpool = [campeao]
+    this.matingpool.push(campeao)
     for (let i = 0; i < this.tamanhoPopulacao; i++) {
-      let percentual = this.pontos[i].desempenho * 100
+      let percentual = floor(this.pontos[i].desempenho * 10)
       for (let j = 0; j < percentual; j++)
         this.matingpool.push(this.pontos[i])
     }
@@ -33,7 +45,6 @@ class Populacao {
 
   selecao() {
     let melhorGene = this.matingpool[0].dna
-    melhorGene.mutacao()
     let novosPontos = [new Ponto(melhorGene)]
 
     for (let i = 1; i < this.pontos.length; i++) {
@@ -45,13 +56,7 @@ class Populacao {
       novosPontos[i] = new Ponto(filho)
     }
 
-    this.pontos = novosPontos;
-  }
-
-  executa() {
-    for (let i = 0; i < this.tamanhoPopulacao; i++) {
-      this.pontos[i].atualiza()
-      this.pontos[i].exibe()
-    }
+    novosPontos[0].melhor = true
+    return novosPontos;
   }
 }

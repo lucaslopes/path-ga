@@ -7,28 +7,21 @@ class Ponto {
     this.desempenho = 0
     this.chegou     = false
     this.bateu      = false
+    this.melhor     = false
+    this.cicloFim   = limiteVida
 
     if (dna) this.dna = dna
     else this.dna = new DNA()
   }
 
-  aplicaForca(forca) {
-    this.aceleracao.add(forca);
-  }
-
-  calculaDesempenho() {
-    let distancia = this.posicao.dist(alvo)
-    this.desempenho = (1 / distancia) * 100
-
-    if (this.chegou) this.desempenho *= 100
-    if (this.bateu)  this.desempenho /= 10
-
-    if (this.posicao.x > 500) this.desempenho *= 100
-  }
-
   atualiza() {
     let distancia = this.posicao.dist(alvo)
-    if (distancia == 1) this.chegou = true
+    if (distancia < 5) this.chegou = true
+
+    if (this.chegou && this.cicloFim == limiteVida) {
+      this.cicloFim = ciclo
+      console.log('FIM')
+    }
 
     this.checaBateu()
     this.aplicaForca(this.dna.genes[ciclo])
@@ -43,27 +36,45 @@ class Ponto {
   }
 
   checaBateu() {
-    if
-    (
-      (this.posicao.x > 497 && this.posicao.x < 503)
-      &&
-      (this.posicao.y < 400 ||
-      (this.posicao.y > 415 && this.posicao.y < 700) ||
-       this.posicao.y > 730)
-      ||
+    if (
       this.posicao.x > width  ||
       this.posicao.x < 0      ||
       this.posicao.y > height ||
       this.posicao.y < 0
-    )
-    this.bateu = true
+    ) this.bateu = true
+
+    if (
+      (this.posicao.x > 498 && this.posicao.x < 503)
+      &&
+      (this.posicao.y < 400 ||
+      (this.posicao.y > 403 && this.posicao.y < 700) ||
+       this.posicao.y > 706)
+    ) this.bateu = true
+  }
+
+  aplicaForca(forca) {
+    this.aceleracao.add(forca);
   }
 
   exibe() {
     push()
-      stroke(255, 0, 255, 100)
+      if (this.melhor) stroke(0, 255, 255)
+      else stroke(255, 0, 255, 50)
+      strokeWeight(2)
       translate(this.posicao.x, this.posicao.y);
       point(0, 0)
     pop()
+  }
+
+  calculaDesempenho() {
+    let distancia = this.posicao.dist(alvo)
+    this.desempenho = (1 / distancia) * 100
+
+    if (this.bateu)
+      this.desempenho /= 2
+    if (this.posicao.x > 503)
+      this.desempenho *= 10
+    if (this.chegou)
+      this.desempenho *= map(this.cicloFim, 0, limiteVida, 100, 10)
   }
 }

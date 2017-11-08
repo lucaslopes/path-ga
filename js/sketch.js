@@ -1,15 +1,18 @@
-const limiteVida = 500
+const limiteVida = 550
 const forcaMaxima = 0.25
+const tamTela = 1000
+const tamPopulacao = 1000
 
 let populacao
 let ciclo = 0
+let geracoes = 1
 let alvo
 
 function setup() {
-  createCanvas(1000, 1000)
+  createCanvas(tamTela, tamTela)
   background(51)
   populacao = new Populacao()
-  alvo = createVector(1000, 1000)
+  alvo = createVector(tamTela, tamTela)
 }
 
 function draw() {
@@ -19,15 +22,22 @@ function draw() {
   if (ciclo == limiteVida) {
     background(51)
     populacao.avalia()
-    populacao.selecao()
+    let novosPontos = populacao.selecao()
+    populacao = new Populacao(novosPontos)
     ciclo = 0
+    geracoes++
   }
 
-  stroke(255, 100)
-  rect(500, 0, 1, 400)
-  rect(500, 415, 1, 285)
-  rect(500, 730, 1, 270)
-  // rect(500, 402, 1, 300)
-  // rect(500, 705, 1, 292)
-  point(999, 999)
+  // Obstáculo
+  stroke(255, 50)
+  strokeWeight(3)
+  strokeCap(SQUARE)
+  line(500,   0, 500, 400)
+  line(500, 403, 500, 700)
+  line(500, 706, 500, 1000)
+
+  // Chegada
+  noStroke()
+  fill(0, 255, 0)
+  rect(tamTela - 10, tamTela - 10, 10, 10)
 }
